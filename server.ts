@@ -1,7 +1,6 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
@@ -9,9 +8,8 @@ import crypto from 'crypto';
 
 dotenv.config();
 
-// Resolve paths
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// Resolve paths (works in both dev (tsx) and production (compiled .cjs) modes)
+const __dirname = process.cwd();
 
 const PORT = 3000;
 const DATA_DIR = path.join(__dirname, 'data');
@@ -157,10 +155,10 @@ function authenticateToken(req: express.Request): any | null {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
   if (!token) return null;
-  
+
   const payload = decodeToken(token);
   if (!payload) return null;
-  
+
   try {
     const usersData = fs.readFileSync(USERS_FILE, 'utf-8');
     const users = JSON.parse(usersData);
@@ -206,7 +204,7 @@ async function startServer() {
       fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2), 'utf-8');
 
       const token = generateToken(newUser);
-      
+
       // Don't send back password hash
       const { passwordHash, ...userResponse } = newUser;
 
@@ -358,7 +356,7 @@ async function startServer() {
   app.post('/api/donate', (req, res) => {
     try {
       const { projectTitle, amount, donorName, email, phone, isAnonymous, waqfTarget } = req.body;
-      
+
       if (!amount || amount <= 0) {
         return res.status(400).json({ error: 'Invalid donation amount' });
       }
@@ -366,7 +364,7 @@ async function startServer() {
       // Update project statistics in projects.json
       const projectsData = fs.readFileSync(PROJECTS_FILE, 'utf-8');
       const projects = JSON.parse(projectsData);
-      
+
       let projectMatched = false;
       const updatedProjects = projects.map((p: any) => {
         // If specific project title was provided, match it; otherwise if general waqf or general bank
@@ -386,7 +384,7 @@ async function startServer() {
       // Record contribution history in donations.json
       const donationsData = fs.readFileSync(DONATIONS_FILE, 'utf-8');
       const donations = JSON.parse(donationsData);
-      
+
       const newDonation = {
         id: `don_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
         projectTitle: projectTitle || 'البنك الوقفي العام',
@@ -418,12 +416,12 @@ async function startServer() {
     try {
       const projectsData = fs.readFileSync(PROJECTS_FILE, 'utf-8');
       const projects = JSON.parse(projectsData);
-      
+
       const donationsData = fs.readFileSync(DONATIONS_FILE, 'utf-8');
       const donations = JSON.parse(donationsData);
 
       const totalActiveProjects = projects.length;
-      
+
       // Aggregate total amount & total donor count from both existing initial progress + real transactions
       let totalAmountRaised = projects.reduce((acc: number, curr: any) => acc + curr.currentAmount, 0);
       let totalDonorsCount = projects.reduce((acc: number, curr: any) => acc + curr.donorCount, 0);
@@ -493,7 +491,7 @@ async function startServer() {
       const ai = getGeminiClient();
 
       // System instruction outlining persona, domain knowledge, and tone
-      const systemInstruction = 
+      const systemInstruction =
         "أنت 'مستشار وقفي تك الذكي' - المساعد الافتراضي الرسمي لمنصة (وقفي تك / البنك الوقفي الرقمي في الجزائر). " +
         "تجيب على استفسارات المحسنين والواقفين باللغة العربية الفصحى الودودة والوقورة. " +
         "مهمتك هي:\n" +
@@ -513,7 +511,7 @@ async function startServer() {
 
       // Prepare contents array incorporating history
       const contents = [];
-      
+
       // Map history if provided
       for (const h of chatHistory) {
         contents.push({
