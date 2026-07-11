@@ -1,0 +1,6 @@
+{
+  "name": "البنك الوقفي الرقمي",
+  "description": "منصة رقمية متكاملة لإدارة واستقطاب الأوقاف الإسلامية وتحقيق المقاصد الشرعية والتنمية المستدامة",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

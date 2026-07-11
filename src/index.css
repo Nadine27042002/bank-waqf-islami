@@ -1,0 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;900&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Tajawal", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-serif: "Amiri", "Georgia", serif;
+  
+  --font-tajawal: "Tajawal", sans-serif;
+  --font-amiri: "Amiri", serif;
+}
+
+/* Core base body adjustments */
+html, body {
+  font-family: "Tajawal", sans-serif;
+  scroll-behavior: smooth;
+  background-color: #F9F6F0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Animations */
+@keyframes spin-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Print Layout Media Rule specificity */
+@media print {
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+  /* Hide every viewport element */
+  body > div {
+    display: none !important;
+  }
+  /* Show only the targeted printed certificate tag */
+  #waqf-certificate-print-wrapper {
+    display: block !important;
+  }
+  /* Re-enable print wrapper container inside mount */
+  #waqf-certificate-print {
+    display: block !important;
+    visibility: visible !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    border: 8px double #C9A84C !important;
+    background-color: #F9F6F0 !important;
+    box-shadow: none !important;
+    padding: 2.5rem !important;
+    margin: 0 !important;
+  }
+  #waqf-certificate-print * {
+    visibility: visible !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+}
